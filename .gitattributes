@@ -1,0 +1,46 @@
+# ==========================================================================
+# Aither — git attributes
+# ==========================================================================
+
+# --------------------------------------------------------------------------
+# GitHub language statistics
+#
+# The client in web/ is hand-written and embedded into the binary with
+# //go:embed, but it is not what this project is written in: Aither is a Go
+# program. Marking those assets as non-detectable keeps them out of the
+# repository's language breakdown, so the stats bar reflects the Go code.
+#
+# GitHub reads these rules from the committed .gitattributes at analysis time,
+# so the language bar updates on the next push.
+# --------------------------------------------------------------------------
+
+web/**/*.html linguist-detectable=false
+web/**/*.css  linguist-detectable=false
+web/**/*.js   linguist-detectable=false
+
+# --------------------------------------------------------------------------
+# Line endings
+#
+# `text=auto` lets Git decide what is text, and eol=lf normalises those files
+# to LF on checkout so a Windows clone cannot rewrite every line. Files Git
+# detects as binary are left untouched.
+# --------------------------------------------------------------------------
+
+* text=auto eol=lf
+
+# Source, docs and embedded assets must always be LF.
+*.go   text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.md   text eol=lf
+
+# Defensive: real binaries are never line-ending converted.
+*.db   binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary

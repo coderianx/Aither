@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Aither — a local chat client for OpenRouter, Groq and other OpenAI-compatible providers." />
+    <title>Aither</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23171717'/%3E%3Cpath d='M10 22 16 9l6 13M12.6 18h6.8' fill='none' stroke='%23ececec' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- Icon sprite: Lucide-style 24px stroked symbols. -->
+    <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M5 12h14" /><path d="M12 5v14" />
+      </symbol>
+      <symbol id="i-panel-left" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" />
+      </symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24">
+        <path d="M12 19V5" /><path d="m5 12 7-7 7 7" />
+      </symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5" /></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24">
+        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" />
+      </symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24">
+        <path d="M3 6h18" />
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        <path d="M10 11v6" /><path d="M14 11v6" />
+      </symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24">
+        <path d="M4 21v-7" /><path d="M4 10V3" /><path d="M12 21v-9" />
+        <path d="M12 8V3" /><path d="M20 21v-5" /><path d="M20 12V3" />
+        <path d="M1 14h6" /><path d="M9 8h6" /><path d="M17 16h6" />
+      </symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24">
+        <rect x="9" y="9" width="12" height="12" rx="2" />
+        <path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" />
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" /><path d="M12 8v4" /><path d="M12 16h.01" />
+      </symbol>
+      <symbol id="i-plug" viewBox="0 0 24 24">
+        <path d="M12 22v-5" /><path d="M9 7V2" /><path d="M15 7V2" />
+        <path d="M6 13V8h12v5a6 6 0 0 1-12 0Z" />
+      </symbol>
+      <symbol id="i-a" viewBox="0 0 24 24">
+        <path d="M6 19 12 5l6 14" /><path d="M8 14.5h8" />
+      </symbol>
+    </svg>
+
+    <div class="app" id="app">
+      <aside class="sidebar" id="sidebar" aria-label="Conversations">
+        <p class="sidebar__brand">
+          <span class="brand__mark" aria-hidden="true">
+            <svg class="icon"><use href="#i-a" /></svg>
+          </span>
+          <span class="brand__name">Aither</span>
+        </p>
+
+        <div class="sidebar__head">
+          <button class="btn btn--new" id="newChatBtn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>
+            <span>New chat</span>
+          </button>
+          <button class="icon-btn sidebar__collapse" id="collapseBtn" type="button" aria-label="Collapse sidebar">
+            <svg class="icon" aria-hidden="true"><use href="#i-panel-left" /></svg>
+          </button>
+        </div>
+
+        <nav class="sidebar__body" aria-label="Chat history">
+          <p class="sidebar__label">Chats</p>
+          <ul class="conv-list" id="convList"></ul>
+          <p class="sidebar__empty" id="convEmpty" hidden>No conversations yet.</p>
+        </nav>
+
+        <div class="sidebar__foot">
+          <button class="btn btn--ghost btn--block" id="providersBtn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#i-sliders" /></svg>
+            <span>Providers</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="scrim" id="scrim" hidden></div>
+
+      <main class="main" id="main">
+        <header class="topbar">
+          <button class="icon-btn" id="sidebarToggle" type="button" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="true">
+            <svg class="icon" aria-hidden="true"><use href="#i-panel-left" /></svg>
+          </button>
+          <h1 class="topbar__title" id="chatTitle">New chat</h1>
+          <button class="model-btn" id="modelBtn" type="button" aria-haspopup="dialog" aria-expanded="false">
+            <span class="model-btn__text" id="modelBtnText">Select a model</span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down" /></svg>
+          </button>
+        </header>
+
+        <div class="chat-scroll" id="chatScroll" tabindex="-1">
+          <div class="chat" id="chat" role="log" aria-live="off" aria-label="Conversation"></div>
+        </div>
+
+        <div class="composer-wrap">
+          <div class="hero" aria-hidden="true">
+            <span class="hero__mark">
+              <svg class="icon"><use href="#i-a" /></svg>
+            </span>
+          </div>
+
+          <h2 class="greeting" id="greeting">What can I help with?</h2>
+
+          <div class="composer">
+            <form class="composer__form" id="composerForm">
+              <label class="sr-only" for="messageInput">Message</label>
+              <textarea
+                class="composer__input"
+                id="messageInput"
+                rows="1"
+                placeholder="Message Aither"
+                autocomplete="off"
+                spellcheck="true"
+              ></textarea>
+              <button class="composer__submit" id="submitBtn" type="submit" aria-label="Send message" disabled>
+                <svg class="icon" aria-hidden="true"><use href="#i-send" /></svg>
+              </button>
+            </form>
+          </div>
+
+          <p class="composer__hint">Aither can make mistakes. Check important info.</p>
+        </div>
+      </main>
+    </div>
+
+    <div class="popover" id="modelPopover" hidden>
+      <div class="popover__head">
+        <input class="input input--search" id="modelSearch" type="search" placeholder="Search models" aria-label="Search models" autocomplete="off" />
+      </div>
+      <div class="popover__list" id="modelList" role="listbox" aria-label="Available models"></div>
+    </div>
+
+    <dialog class="dialog" id="providersDialog" aria-labelledby="providersTitle">
+      <div class="dialog__head">
+        <h2 class="dialog__title" id="providersTitle">Providers</h2>
+        <button class="icon-btn" id="providersClose" type="button" aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x" /></svg>
+        </button>
+      </div>
+
+      <div class="dialog__body">
+        <form class="form" id="providerForm" novalidate>
+          <div class="field">
+            <label class="field__label" for="providerName">Provider</label>
+            <select class="input" id="providerName" name="provider_name">
+              <option value="openrouter">OpenRouter</option>
+              <option value="groq">Groq</option>
+              <option value="custom">Custom (OpenAI-compatible)</option>
+            </select>
+          </div>
+
+          <div class="field" id="baseURLField" hidden>
+            <label class="field__label" for="providerBaseURL">Base URL</label>
+            <input class="input" id="providerBaseURL" name="base_url" type="url" placeholder="https://api.example.com/v1" autocomplete="off" />
+            <p class="field__hint">Must expose an OpenAI-compatible <code>/chat/completions</code> endpoint.</p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="providerKey">API key</label>
+            <input class="input" id="providerKey" name="api_key" type="password" placeholder="sk-…" autocomplete="off" required />
+            <p class="field__hint">Kept in your local Aither database and sent only to the provider.</p>
+          </div>
+
+          <p class="form__error" id="providerError" role="alert" hidden></p>
+
+          <button class="btn btn--primary" type="submit" id="providerSubmit">Add provider</button>
+        </form>
+
+        <hr class="divider" />
+
+        <h3 class="section-title">Connected</h3>
+        <ul class="provider-list" id="providerList"></ul>
+        <p class="section-empty" id="providerEmpty" hidden>No providers connected yet.</p>
+      </div>
+    </dialog>
+
+    <div class="toasts" id="toasts" role="region" aria-live="polite" aria-label="Notifications"></div>
+    <p class="sr-only" id="liveStatus" role="status" aria-live="polite"></p>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

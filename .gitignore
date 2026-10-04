@@ -1,0 +1,28 @@
+# ==========================================================================
+# Aither — ignored paths
+# ==========================================================================
+
+# Compiled server binary. `go build -o aither .` produces the lower-case name,
+# a bare `go build .` uses the module name instead.
+/aither
+/Aither
+
+# Go build, test and coverage artefacts
+*.exe
+*.exe~
+*.test
+*.out
+*.prof
+
+# Local SQLite database. The default lives outside the repository
+# (~/.aither/aither.db), but `./aither -db ./aither.db` keeps it here.
+*.db
+*.db-wal
+*.db-shm
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
